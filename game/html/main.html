@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>魂斗罗</title>
+    <script type="text/javascript" src="../js/BackGround.js"></script>
+    <script type="text/javascript" src="../js/hero.js"></script>
+    <script type="text/javascript" src="../js/keyboard.js"></script>
+    <script type="text/javascript" src="../js/shot.js"></script>
+    <script type="text/javascript" src="../js/diji.js"></script>
+    <script type="text/javascript" src="../js/hit.js"></script>
+    <style>
+        .hide{
+            /*想把图画画上去必须隐藏*/
+            display:none;
+        }
+
+        .container{
+            position: relative;
+            width: 500px;
+        }
+        .container .music{
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+        .score{
+            position: absolute;
+            color: white;
+            left:10px;
+            top:10px;
+            font-size:18px;
+            font-weight: bold;
+        }
+
+        .over{
+            position: absolute;
+            left:180px;
+            top:90px;
+            display: none;
+        }
+    </style>
+
+    <script>
+        <!-- 定义全部变量-->
+//        全局分数
+        var g_score=0;
+//        定义全局画布
+        var g_canvas;
+//        定义全局上下文
+        var g_context;
+//
+        var g_background;
+//       定义全局速度
+        var g_speed=5;
+        var bgMusic;
+        var g_hero;
+        var g_shotArray=new Array();
+        var g_dijiArray=new Array();
+        var count=0;
+
+        window.onload=function(){
+
+            var over=document.getElementById("over");
+
+
+//          播放背景音乐
+            bgMusic= new Audio();
+            bgMusic.src="../source/3550.wav";
+            bgMusic.play();
+
+
+//            初始化画布
+            g_canvas=document.getElementById("can");
+//          初始化上下文
+            g_context=g_canvas.getContext("2d");
+//            初始化背景图
+            g_background=new BackGround(0,0,"bgimg");
+//            初始化英雄
+            g_hero=new hero(80,90,"hero5","hero6");
+
+
+
+
+//            监听键盘事件
+            document.addEventListener("keyup",keyUp,true);
+            document.addEventListener("keydown",keyDown,true);
+
+
+//            开启定时器
+            setInterval(function(){
+                g_background.show();
+                g_hero.show();
+//                重绘所有子弹
+               for(var i=0;i<g_shotArray.length;i++) {
+                   g_shotArray[i].show();
+                   if (g_shotArray[i]) {
+
+                       g_shotArray[i].removeShot();
+                   }
+               }
+
+//                重绘所有敌机
+                for(var i=0;i<g_dijiArray.length;i++){
+                    g_dijiArray[i].show();
+                    g_dijiArray[i].removeDiji();
+                }
+                count++;
+                if(count%50==0){
+                    //           产生敌机
+                    var random=parseInt(Math.random()*100000)%8+1;
+
+                    makeDijiWithType(random);
+                }
+            },60);
+        }
+//        点击切换音量图片
+
+        function changeImg(cell){
+//           如果当前图片是打开则换成关闭 点击图片把图片传给cell
+          if(cell.src.indexOf("open")>0){
+              cell.src="../image/close.PNG";
+              bgMusic.pause();
+          }else{
+//              如果是关闭则打开
+              cell.src="../image/open.PNG";
+              bgMusic.play();
+              bgMusic.loop;
+          }
+        }
+    function  pauseGame(cell){
+
+        //           如果当前图片是打开则换成关闭 点击图片把图片传给cell
+        if(cell.src.indexOf("d2")>0){
+            cell.src="../image/d2.png";
+           var pause=document.getElementById("can");
+            pause.onPause();
+
+        }else{
+//              如果是关闭则打开
+            cell.src="../image/d3.png";
+           var  pause=document.getElementById("can");
+            pause.onPause();
+        }
+    }
+
+    </script>
+</head>
+<body>
+<div class="container">
+<canvas id="can" width="500px" height="270px"></canvas>
+<!--画图画到画布里-->
+<img src="../image/123.png" id="bgimg" class="hide">
+<img src="../image/open.png"onclick="changeImg(this)"class="music">
+
+    <div id="score" class="score">SCORE：0</div>
+    <img src="../image/over.png" id="over"class="over">
+
+    <img src="../image/hero5.png" id="hero5"class="hide">
+    <!--<img src="../image/d1.jpg" onclick="pauseGame(this)" id="pauseimg"class="pause">-->
+    <img src="../image/hero6.png" id="hero6"class="hide">
+    <img src="../image/hero3.png" id="hero3"class="hide">
+
+    <img src="../image/d1.png" id="d1"class="hide">
+    <img src="../image/d2.png" id="d2"class="hide">
+    <img src="../image/d3.png" id="d3"class="hide">
+    <!-- 修改过加了一副图-->
+    <img src="../image/shot.PNG" id="shot"class="hide">
+     <strong>&nbsp;跳：向上键 ；下蹲：向下键；发射单个子弹：a；发射一排子弹:s</strong>
+</div>
+</body>
+</html>
