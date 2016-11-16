@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ptl.rbac.mapper.PermissionMapper">
+	<select id="findMenuByUser" parameterType="int" resultType="Permission">
+		select * from t_permission 
+		where type='menu' and id in(
+			select pid from t_role_permission
+			where rid in(
+				select rid from t_user_role where uid=#{userId}
+			)
+		) 
+		order by pid
+	</select>
+	<select id="findPermissionByUser" parameterType="int" resultType="Permission">
+		select * from t_permission 
+		where type='button' and id in(
+			select pid from t_role_permission
+			where rid in(
+				select rid from t_user_role where uid=#{userId}
+			)
+		) 
+	</select>
+</mapper> 
